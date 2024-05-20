@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./database');
+const itemController = require('./controller/item.controller');
 
 async function launchServer() {
 
@@ -13,8 +14,10 @@ async function launchServer() {
     res.json({ message: 'Hello World!' });
   });
 
+  app.get('/items', itemController.getItems);
+
   try {
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
     console.log('Database is ready');
   } catch (err) {
     console.log('Unable to connect to the database:');
