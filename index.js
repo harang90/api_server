@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./database');
 const itemController = require('./controller/item.controller');
+const sheetController = require('./controller/sheet.controller');
 
 async function launchServer() {
 
@@ -15,6 +16,8 @@ async function launchServer() {
   });
 
   app.get('/items', itemController.getItems);
+
+  app.get('/sheet', sheetController.sheetToJson);
 
   try {
     await sequelize.sync({ force: true });
