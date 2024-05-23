@@ -1,14 +1,23 @@
 
-const SheetDownloader = require('../util/sheet.downloader');
+const SheetApiClientFactory = require('../util/sheet_api_client_factory');
+const SheetDownloader = require('../util/sheet_downloader');
 
 async function sheetToJson(req, res) {
-  const params = req.query;
-  console.log(params);
+  
+  try {
+    const params = req.query;
+    console.log(params);
 
-  const sheetApiClient
-  const downloader = new SheetDownloader(sheetApiClient);
+    const sheetApiClient = await SheetApiClientFactory.create();
+    const downloader = new SheetDownloader(sheetApiClient);
 
-  downloader.getValues(params.id, params.range)
+    const object = await downloader.getRowsToObject(params.id, params.name, params.file);
+
+    res.json(object);
+
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 module.exports = {
