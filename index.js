@@ -1,4 +1,6 @@
 
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./database');
@@ -16,6 +18,8 @@ async function launchServer() {
   });
 
   app.get('/items', itemController.getItems);
+//  app.get('/updateItems', itemController.updateItems);
+//  app.get('/randomItem', itemController.getRandomItem);
 
   app.get('/sheet', sheetController.sheetToJson);
 
