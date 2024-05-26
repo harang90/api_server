@@ -19,12 +19,12 @@ async function launchServer() {
 
   app.get('/items', itemController.getItems);
   app.get('/updateItems', itemController.updateItems);
-//  app.get('/randomItem', itemController.getRandomItem);
+  app.get('/randomItem', itemController.getRandomItem);
 
   app.get('/sheet', sheetController.sheetToJson);
 
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ alter: true });
     console.log('Database is ready');
   } catch (err) {
     console.log('Unable to connect to the database:');

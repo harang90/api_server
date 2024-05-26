@@ -46,6 +46,23 @@ async function updateItems(req, res) {
 
 async function getRandomItem(req, res) {
 
+  try {
+    const itemIds = await Item.findAll({
+      attributes: ['id']
+    });
+    if (itemIds.length === 0) {
+      res.status(404).send('No items');
+    } else {
+      const randomIndex = Math.floor(Math.random() * itemIds.length);
+      const randomItemId = itemIds[randomIndex].id;
+      const randomItem = await Item.findByPk(randomItemId);
+      res.status(200).json(randomItem);
+    }
+  } catch (error) {
+    console.error('Error fetching random item:', error);
+    res.status(500).send('Error fetching random item');
+  }
+
 }
 
 module.exports = {
