@@ -23,6 +23,12 @@ module.exports = (sequelize) => {
       nationality: {
         type: DataTypes.STRING(255),
       },
+      link: {
+        type: DataTypes.STRING(255),
+      },
+      source: {
+        type: DataTypes.STRING(255),
+      },
     },
     {
     }

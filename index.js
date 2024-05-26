@@ -18,7 +18,7 @@ async function launchServer() {
   });
 
   app.get('/items', itemController.getItems);
-//  app.get('/updateItems', itemController.updateItems);
+  app.get('/updateItems', itemController.updateItems);
 //  app.get('/randomItem', itemController.getRandomItem);
 
   app.get('/sheet', sheetController.sheetToJson);
