@@ -17,6 +17,7 @@
     "google-auth-library": "^9.10.0",
     "googleapis": "^137.1.0",
     "mysql2": "^3.9.7",
+    "puppeteer": "^22.10.0",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {

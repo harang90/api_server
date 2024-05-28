@@ -1,6 +1,8 @@
 
 const fs = require('fs').promises;
 
+const ItemDownloader = require('../util/item_downloader');
+
 const { Item } = require('../database');
 
 async function getItems(req, res) {
@@ -47,15 +49,29 @@ async function updateItems(req, res) {
 async function getRandomItem(req, res) {
 
   try {
+
     const itemIds = await Item.findAll({
       attributes: ['id']
     });
+
     if (itemIds.length === 0) {
+
       res.status(404).send('No items');
+
     } else {
+
       const randomIndex = Math.floor(Math.random() * itemIds.length);
       const randomItemId = itemIds[randomIndex].id;
       const randomItem = await Item.findByPk(randomItemId);
+
+      const link = randomItem.link;
+      const itemDownloader = new ItemDownloader();
+      const image = await itemDownloader.downloadImage(link);
+
+      randomItem.image = image;
+
+      //TODO await randomItem.save();
+
       res.status(200).json(randomItem);
     }
   } catch (error) {
