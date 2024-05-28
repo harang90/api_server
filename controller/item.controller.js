@@ -64,15 +64,19 @@ async function getRandomItem(req, res) {
       const randomItemId = itemIds[randomIndex].id;
       const randomItem = await Item.findByPk(randomItemId);
 
-      const link = randomItem.link;
-      const itemDownloader = new ItemDownloader();
-      const image = await itemDownloader.downloadImage(link);
+      if (!(randomItem.image === null)) {
 
-      randomItem.image = image;
+      } else {
+        const link = randomItem.link;
+        const itemDownloader = new ItemDownloader();
+        const image = await itemDownloader.downloadImage(link);
 
-      //TODO await randomItem.save();
+        randomItem.image = image;
+        await randomItem.save();
+      }
 
       res.status(200).json(randomItem);
+
     }
   } catch (error) {
     console.error('Error fetching random item:', error);

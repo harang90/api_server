@@ -4,11 +4,12 @@ const puppeteer = require('puppeteer');
 class ItemDownloader {
 
     async downloadImage(link) {
-        const image = await this._extractImageFromLink(link);
-        return image;
+        const links = await this._extractLinksFromLink(link);
+
+        return links;
     }
 
-    async _extractImageFromLink(link) {
+    async _extractLinksFromLink(link) {
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -32,6 +33,7 @@ class ItemDownloader {
 
         await browser.close();
 
+        return links;
     }
 
 }
