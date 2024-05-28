@@ -9,6 +9,26 @@ class ItemDownloader {
         return links;
     }
 
+    async _downloadFiles(links) {
+        const fetch = require('node-fetch');
+        const fs = require('fs');
+        const path = require('path');
+
+        const downloadFiles = async (links) => {
+            const downloadPromises = links.map(async (url, index) => {
+                const response = await fetch(url);
+                const buffer = await response.buffer();
+                const filePath = path.resolve(__dirname, `downloaded_image_${index}.jpg`);
+                fs.writeFileSync(filePath, buffer);
+                return filePath;
+            });
+            return Promise.all(downloadPromises);
+        };
+
+        const downloadedFilePaths = await downloadFiles(links);        
+    }
+
+
     async _extractLinksFromLink(link) {
 
         const browser = await puppeteer.launch();
