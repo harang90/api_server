@@ -4,32 +4,13 @@ const puppeteer = require('puppeteer');
 class ItemDownloader {
 
     async downloadImage(link) {
-        const links = await this._extractLinksFromLink(link);
+        const links = await this._extractFileLinksFromLink(link);
+        const paths = await this._downloadFiles(links);
 
-        return links;
+        return paths;
     }
 
-    async _downloadFiles(links) {
-        const fetch = require('node-fetch');
-        const fs = require('fs');
-        const path = require('path');
-
-        const downloadFiles = async (links) => {
-            const downloadPromises = links.map(async (url, index) => {
-                const response = await fetch(url);
-                const buffer = await response.buffer();
-                const filePath = path.resolve(__dirname, `downloaded_image_${index}.jpg`);
-                fs.writeFileSync(filePath, buffer);
-                return filePath;
-            });
-            return Promise.all(downloadPromises);
-        };
-
-        const downloadedFilePaths = await downloadFiles(links);        
-    }
-
-
-    async _extractLinksFromLink(link) {
+    async _extractFileLinksFromLink(link) {
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -56,6 +37,30 @@ class ItemDownloader {
         return links;
     }
 
+    async _downloadFiles(links) {
+        const axios = require('axios');
+        const fs = require('fs');
+        const path = require('path');
+
+        const downloadFiles = async (links) => {
+            const downloadPromises = links.map(async (url, index) => {
+                const response = await axios({
+                    url,
+                    method: 'GET',
+                    responseType: 'arraybuffer'
+                });
+                const urlPath = new URL(url).pathname;
+                const fileName = path.basename(urlPath);
+                const filePath = path.resolve(__dirname, '../uploads/', fileName);
+                fs.writeFileSync(filePath, response.data);
+                return filePath;
+            });
+            return Promise.all(downloadPromises);
+        };
+
+        const downloadedFilePaths = await downloadFiles(links);        
+        return downloadedFilePaths;
+    }
 }
 
 module.exports = ItemDownloader;

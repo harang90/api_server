@@ -69,9 +69,9 @@ async function getRandomItem(req, res) {
       } else {
         const link = randomItem.link;
         const itemDownloader = new ItemDownloader();
-        const image = await itemDownloader.downloadImage(link);
+        const paths = await itemDownloader.downloadImage(link);
 
-        randomItem.image = image;
+        randomItem.image = paths;
         await randomItem.save();
       }
 
