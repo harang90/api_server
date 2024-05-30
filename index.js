@@ -4,8 +4,10 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./database');
-const itemController = require('./controller/item.controller');
-const sheetController = require('./controller/sheet.controller');
+
+const itemsRouter = require('./routes/items');
+const sheetsRouter = require('./routes/sheets');
+const playRouter = require('./routes/play');
 
 async function launchServer() {
 
@@ -17,11 +19,9 @@ async function launchServer() {
     res.json({ message: 'Hello World!' });
   });
 
-  app.get('/items', itemController.getItems);
-  app.get('/updateItems', itemController.updateItems);
-  app.get('/randomItem', itemController.getRandomItem);
-
-  app.get('/sheet', sheetController.sheetToJson);
+  app.use('/items', itemsRouter);
+  app.use('/sheets', sheetsRouter);
+  app.use('/play', playRouter);
 
   try {
     await sequelize.sync({ alter: true });

@@ -1,12 +1,11 @@
 
-const express = require('express');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+async function playVideo(req, res) {
 
-app.get('/video', (req, res) => {
+  
+
   const videoPath = path.join(__dirname, 'videos', 'sample.mp4');
   const stat = fs.statSync(videoPath);
   const fileSize = stat.size;
@@ -36,20 +35,11 @@ app.get('/video', (req, res) => {
     res.writeHead(200, head);
     fs.createReadStream(videoPath).pipe(res);
   }
-});
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+}
 
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
+async function playImage(req, res) {
 
-const app = express();
-const PORT = process.env.PORT || 3001;
-
-app.get('/image', (req, res) => {
   const imagePath = path.join(__dirname, 'public', 'images', 'sample.jpeg');
   fs.readFile(imagePath, (err, data) => {
     if (err) {
@@ -59,8 +49,5 @@ app.get('/image', (req, res) => {
       res.send(data);
     }
   });
-});
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+}

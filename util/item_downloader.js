@@ -42,7 +42,7 @@ class ItemDownloader {
         const fs = require('fs');
         const path = require('path');
 
-        const downloadFiles = async (links) => {
+        const _downloadFilesFromLinks = async (links) => {
             const downloadPromises = links.map(async (url, index) => {
                 const response = await axios({
                     url,
@@ -53,13 +53,13 @@ class ItemDownloader {
                 const fileName = path.basename(urlPath);
                 const filePath = path.resolve(__dirname, '../uploads/', fileName);
                 fs.writeFileSync(filePath, response.data);
-                return filePath;
+                return fileName;
             });
             return Promise.all(downloadPromises);
         };
 
-        const downloadedFilePaths = await downloadFiles(links);        
-        return downloadedFilePaths;
+        const downloadedFileNames = await _downloadFilesFromLinks(links);        
+        return downloadedFileNames;
     }
 }
 
