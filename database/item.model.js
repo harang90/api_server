@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
       source: {
         type: DataTypes.STRING(255),
       },
-      image: {
+      resource: {
         type: DataTypes.JSON,
       },
     },

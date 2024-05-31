@@ -63,15 +63,15 @@ async function getRandomItem(req, res) {
       const randomIndex = Math.floor(Math.random() * itemIds.length);
       const randomItemId = itemIds[randomIndex].id;
       const randomItem = await Item.findByPk(randomItemId);
-
-      if (!(randomItem.image === null)) {
+      
+      if (!(randomItem.resource === null)) {
 
       } else {
         const link = randomItem.link;
         const itemDownloader = new ItemDownloader();
         const paths = await itemDownloader.downloadImage(link);
 
-        randomItem.image = paths;
+        randomItem.resource = paths;
         await randomItem.save();
       }
 

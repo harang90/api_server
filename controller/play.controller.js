@@ -4,9 +4,9 @@ const fs = require('fs');
 
 async function playVideo(req, res) {
 
-  
+  const filename = req.params.filename;
 
-  const videoPath = path.join(__dirname, 'videos', 'sample.mp4');
+  const videoPath = path.join(__dirname, '..', 'uploads', filename);
   const stat = fs.statSync(videoPath);
   const fileSize = stat.size;
   const range = req.headers.range;
@@ -40,7 +40,9 @@ async function playVideo(req, res) {
 
 async function playImage(req, res) {
 
-  const imagePath = path.join(__dirname, 'public', 'images', 'sample.jpeg');
+  const filename = req.params.filename;
+
+  const imagePath = path.join(__dirname, '..', 'uploads', filename);
   fs.readFile(imagePath, (err, data) => {
     if (err) {
       res.status(500).send('Error reading the image file');
@@ -51,3 +53,8 @@ async function playImage(req, res) {
   });
 
 }
+
+module.exports = {
+  playVideo,
+  playImage,
+};
