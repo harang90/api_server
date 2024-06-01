@@ -7,6 +7,19 @@ const { Item } = require('../database');
 
 async function getItems(req, res) {
   const result = await Item.findAll();
+
+  result.forEach(async (item) => {
+    if (!(item.resource === null)) {
+
+    } else {
+      const itemDownloader = new ItemDownloader();
+      const paths = await itemDownloader.downloadImage(item.link);
+
+      item.resource = paths;
+      await item.save();
+    }
+  });
+
   res.status(200).json({ result });
 }
 
