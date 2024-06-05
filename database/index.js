@@ -18,4 +18,6 @@ const sequelize = new Sequalize(config.database, config.user, config.password, {
 module.exports = {
   sequelize,
   Item: require('./item.model')(sequelize),
+  Comment: require('./comment.model')(sequelize),
 };
+

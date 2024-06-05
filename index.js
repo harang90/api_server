@@ -3,17 +3,24 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { sequelize } = require('./database');
 
-const itemsRouter = require('./routes/items');
-const sheetsRouter = require('./routes/sheets');
-const playRouter = require('./routes/play');
+const itemsRouter = require('./routes/item.router.js');
+const sheetsRouter = require('./routes/sheet.router.js');
+const playRouter = require('./routes/play.router.js');
+const commentRouter = require('./routes/comment.router.js');
+
 
 async function launchServer() {
 
   const app = express();
 
   app.use(bodyParser.json());
+
+  app.use(cors({
+    origin: 'http://localhost:8000' // or '*' to allow all domains
+  }));
 
   app.get('/', (req, res) => {
     res.json({ message: 'Hello World!' });
@@ -22,6 +29,7 @@ async function launchServer() {
   app.use('/items', itemsRouter);
   app.use('/sheets', sheetsRouter);
   app.use('/play', playRouter);
+  app.use('/comments', commentRouter);
 
   try {
     await sequelize.sync({ alter: true });
