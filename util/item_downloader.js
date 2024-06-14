@@ -44,33 +44,24 @@ class ItemDownloader {
         const fs = require('fs');
         const path = require('path');
 
-        // const _downloadFilesFromLinks = async (links) => {
-        //     const downloadPromises = links.map(async (url, index) => {
-        //         const response = await axios({
-        //             url,
-        //             method: 'GET',
-        //             responseType: 'arraybuffer'
-        //         });
-        //         const urlPath = new URL(url).pathname;
-        //         const fileName = path.basename(urlPath);
-        //         const filePath = path.resolve(__dirname, '../uploads/', fileName);
-        //         fs.writeFileSync(filePath, response.data);
-        //         return fileName;
-        //     });
-        //     return Promise.all(downloadPromises);
-        // };
-
-        const _extractFileNamesFromLinks = async (links) => {
-            const fileNames = links.map(async (url, index) => {
+        const _downloadFilesFromLinks = async (links) => {
+            const downloadPromises = links.map(async (url, index) => {
+                const response = await axios({
+                    url,
+                    method: 'GET',
+                    responseType: 'arraybuffer'
+                });
                 const urlPath = new URL(url).pathname;
                 const fileName = path.basename(urlPath);
+                const filePath = path.resolve(__dirname, '../uploads/', fileName);
+                fs.writeFileSync(filePath, response.data);
                 return fileName;
             });
-            return Promise.all(fileNames);
+            return Promise.all(downloadPromises);
         };
 
-        const fileNames = await _extractFileNamesFromLinks(links);
-        return fileNames;
+        const downloadedFileNames = await _downloadFilesFromLinks(links);        
+        return downloadedFileNames;
     }
 }
 

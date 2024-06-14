@@ -7,6 +7,11 @@ const { Item } = require('../database');
 
 async function getItems(req, res) {
   const result = await Item.findAll();
+  res.status(200).json({ result });
+}
+
+async function downloadItems(req, res) {
+  const result = await Item.findAll();
 
   result.forEach(async (item) => {
     if (!(item.resource === null)) {
@@ -100,6 +105,7 @@ async function getRandomItem(req, res) {
 
 module.exports = {
   getItems,
+  downloadItems,
   updateItems,
   getRandomItem,
 };
