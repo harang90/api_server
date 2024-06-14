@@ -66,10 +66,10 @@ class ItemDownloader {
                 const fileName = path.basename(urlPath);
                 return fileName;
             });
-            return fileNames;
+            return Promise.all(fileNames);
         };
 
-        const fileNames = await _extractFileNamesFromLinks(links);        
+        const fileNames = await _extractFileNamesFromLinks(links);
         return fileNames;
     }
 }
