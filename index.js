@@ -1,5 +1,6 @@
 
-require('dotenv').config();
+const envPath = process.env.NODE_ENV === 'production' ? './.env.production' : './.env.development';
+require('dotenv').config({ path: envPath });
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -19,7 +20,7 @@ async function launchServer() {
   app.use(bodyParser.json());
 
   app.use(cors({
-    origin: 'http://localhost:8000' // or '*' to allow all domains
+    origin: process.env.CORS_ORIGIN
   }));
 
   app.get('/', (req, res) => {
@@ -40,7 +41,7 @@ async function launchServer() {
     process.exit(Elements.EXIT_FAILURE);
   }
 
-  const port = process.env.PORT || 8080;
+  const port = process.env.PORT || 10000;
   app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
   });
