@@ -1,5 +1,5 @@
-
 const { Comment } = require('../database');
+const geoip = require('geoip-lite');
 
 async function getCommentByItemId(req, res) {
     const itemId = req.params.itemId;
@@ -18,12 +18,18 @@ async function likeComment(req, res) {
 }
 
 async function createComment(req, res) {
-    const itemId = req.params.itemId;
+    const clientIp = req.ip || req.connection.remoteAddress; // Get client IP address
+    const geo = geoip.lookup(clientIp); // Lookup the geolocation information
+
+    console.log("Client IP:", clientIp); // Log the IP address
+    console.log("Country:", geo ? geo.country : "Unknown"); // Log the country or show Unknown if not found
+
     const comment = {
-        itemId,
+        itemId: req.params.itemId,
         text: req.body.text,
         author: req.body.author,
-    }
+        country: geo ? geo.country : "KR" // Store the country if available
+    };
     const newComment = await Comment.create(comment);
     res.json(newComment);
 }
