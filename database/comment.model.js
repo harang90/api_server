@@ -26,6 +26,11 @@ module.exports = (sequelize) => {
       author: {
         type: DataTypes.STRING(255),
       },
+      likes: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+      },
     },
     {
     }

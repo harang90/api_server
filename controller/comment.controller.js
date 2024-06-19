@@ -9,6 +9,14 @@ async function getCommentByItemId(req, res) {
     res.json(comments);
 }
 
+async function likeComment(req, res) {
+    const commentId = req.params.commentId;
+    const comment = await Comment.findByPk(commentId);
+    comment.likes += 1;
+    await comment.save();
+    res.json(comment);
+}
+
 async function createComment(req, res) {
     const itemId = req.params.itemId;
     const comment = {
@@ -20,4 +28,4 @@ async function createComment(req, res) {
     res.json(newComment);
 }
 
-module.exports = { getCommentByItemId, createComment };
+module.exports = { getCommentByItemId, createComment, likeComment };
