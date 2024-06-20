@@ -3,6 +3,9 @@ const envPath = process.env.NODE_ENV === 'production' ? './.env.production' : '.
 require('dotenv').config({ path: envPath });
 
 const express = require('express');
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { sequelize } = require('./database');
@@ -38,13 +41,25 @@ async function launchServer() {
   } catch (err) {
     console.log('Unable to connect to the database:');
     console.log(err);
-    process.exit(Elements.EXIT_FAILURE);
+    process.exit(1);
   }
 
   const port = process.env.PORT || 10000;
-  app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
+
+  if (process.env.NODE_ENV === 'production') {
+    const httpsOptions = {
+      key: fs.readFileSync('./server.key'),
+      cert: fs.readFileSync('./excelgif_com.crt'),
+      ca: fs.readFileSync('./excelgif_com.ca-bundle')
+    };
+    https.createServer(httpsOptions, app).listen(port, () => {
+      console.log(`Server listening on port ${port} with HTTPS`);
+    });
+  } else {
+    http.createServer(app).listen(port, () => {
+      console.log(`Server listening on port ${port} with HTTP`);
+    });
+  }
 
 }
 
