@@ -25,7 +25,7 @@ async function downloadItems(req, res) {
 
     } else {
       const itemDownloader = new ItemDownloader();
-      const paths = await itemDownloader.downloadImage(item.link);
+      const paths = await itemDownloader.downloadItem(item.link);
 
       item.resource = paths;
       await item.save();

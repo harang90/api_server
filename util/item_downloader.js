@@ -2,22 +2,46 @@
 const puppeteer = require('puppeteer');
 
 class ItemDownloader {
-
-    async downloadImage(link) {
-        const links = await this._extractFileLinksFromLink(link);
-        const paths = await this._downloadFiles(links);
-
-        return paths;
+    constructor() {
+        this.browser = null;
     }
 
-    async _extractFileLinksFromLink(link) {
+    async initBrowser(link) {
+        if (!this.browser) {
+            this.browser = await puppeteer.launch({
+                headless: true
+            });
+        }
+    }
 
-        const browser = await puppeteer.launch({
-            headless: true
-        });
-        const page = await browser.newPage();
+    async closeBrowser() {
+        if (this.browser) {
+            await this.browser.close();
+            this.browser = null;
+        }
+    }
+
+    async downloadItem(link) {
+        await this.initBrowser(link);
+
+        const page = await this.browser.newPage();
         await page.goto(link);
 
+        const comments = await this._downloadComments(page);
+        const links = await this._extractFileLinksFromLink(page);
+        const paths = await this._downloadFiles(links);
+
+        await page.close();
+        await this.closeBrowser();
+
+        return { paths: paths, comments: comments }
+    }
+
+    async _downloadComments(page) {
+
+    }
+
+    async _extractFileLinksFromLink(page) {
         const buttonSelector = 'div#download_btn';
         await page.waitForSelector(buttonSelector);
         await page.click(buttonSelector);
@@ -26,15 +50,11 @@ class ItemDownloader {
         await page.waitForSelector(listSelector);
 
         const links = await page.evaluate(() => {
-
             const downloadLinks = document.querySelectorAll('div#download_list a');
-
             return Array.from(downloadLinks).map(anchor => anchor.href);
         });
 
         console.log("links: ", links);
-
-        await browser.close();
 
         return links;
     }
