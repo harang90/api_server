@@ -2,12 +2,19 @@
 const fs = require('fs').promises;
 
 const ItemDownloader = require('../util/item_downloader');
+const sheetController = require('./sheet.controller');
 
 const { Item } = require('../database');
 
 async function getItems(req, res) {
   const result = await Item.findAll();
   res.status(200).json({ result });
+}
+
+async function syncItems(req, res) {
+  await sheetController.sheetToJson(req, res);
+  await updateItems(req, res);
+  await downloadItems(req, res);
 }
 
 async function downloadItems(req, res) {
@@ -105,6 +112,7 @@ async function getRandomItem(req, res) {
 
 module.exports = {
   getItems,
+  syncItems,
   downloadItems,
   updateItems,
   getRandomItem,
