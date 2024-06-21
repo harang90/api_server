@@ -15,6 +15,9 @@ const sequelize = new Sequalize(config.database, config.user, config.password, {
   dialect:'mysql',
 });
 
+const Hierarchy = require('sequelize-hierarchy');
+Hierarchy(sequelize);
+
 module.exports = {
   sequelize,
   Item: require('./item.model')(sequelize),

@@ -10,3 +10,5 @@ class ItemDownloader {
         return paths;
     }
 }
+
+module.exports = new ItemDownloader();

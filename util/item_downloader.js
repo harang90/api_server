@@ -1,5 +1,6 @@
 
 const puppeteer = require('puppeteer');
+const cheerio = require('cheerio');
 
 class ItemDownloader {
     constructor() {
@@ -25,7 +26,8 @@ class ItemDownloader {
         await this.initBrowser(link);
 
         const page = await this.browser.newPage();
-        await page.goto(link);
+        await page.goto(link, { waitUntil: 'networkidle0' });
+
 
         const comments = await this._downloadComments(page);
         const links = await this._extractFileLinksFromLink(page);
@@ -38,7 +40,83 @@ class ItemDownloader {
     }
 
     async _downloadComments(page) {
+        const content = await page.content();
+        return this._parseComments(content);
+    }
 
+    async _parseComments(content) {
+        const $ = cheerio.load(content);
+        const comments = [];
+
+        $('.cmt.r0').each((index, element) => {
+            const $element = $(element);
+            const id = $element.attr('w_idx');
+            const text = $element.find('.content').text().trim();
+            const author = $element.find('.nick').text().trim();
+            const likes = parseInt($element.find('.up u').text().trim()) || 0;
+            const parentId = $element.hasClass('r1') ? $element.prevAll('.cmt.r0:first').attr('w_idx') : null;
+
+            comments.push({
+                id,
+                text,
+                author,
+                likes,
+                parentId
+            });
+        });
+
+        $('.cmt.r1').each((index, element) => {
+            const $element = $(element);
+            const id = $element.attr('w_idx');
+            const text = $element.find('.content').text().trim();
+            const author = $element.find('.nick').text().trim();
+            const likes = parseInt($element.find('.up u').text().trim()) || 0;
+            const parentId = $element.hasClass('r2') ? $element.prevAll('.cmt.r1:first').attr('w_idx') : null;
+
+            comments.push({
+                id,
+                text,
+                author,
+                likes,
+                parentId
+            });
+        });
+
+        $('.cmt.r2').each((index, element) => {
+            const $element = $(element);
+            const id = $element.attr('w_idx');
+            const text = $element.find('.content').text().trim();
+            const author = $element.find('.nick').text().trim();
+            const likes = parseInt($element.find('.up u').text().trim()) || 0;
+            const parentId = $element.hasClass('r3') ? $element.prevAll('.cmt.r2:first').attr('w_idx') : null;
+
+            comments.push({
+                id,
+                text,
+                author,
+                likes,
+                parentId
+            });
+        });
+
+        $('.cmt.r3').each((index, element) => {
+            const $element = $(element);
+            const id = $element.attr('w_idx');
+            const text = $element.find('.content').text().trim();
+            const author = $element.find('.nick').text().trim();
+            const likes = parseInt($element.find('.up u').text().trim()) || 0;
+            const parentId = $element.hasClass('r4') ? $element.prevAll('.cmt.r3:first').attr('w_idx') : null;
+
+            comments.push({
+                id,
+                text,
+                author,
+                likes,
+                parentId
+            });
+        });
+
+        return comments;
     }
 
     async _extractFileLinksFromLink(page) {

@@ -34,8 +34,19 @@ module.exports = (sequelize) => {
       country: {
         type: DataTypes.STRING(255),
       },
+      parentId: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        references: {
+          model: 'Comments',
+          key: 'id',
+        },
+      },
     },
     {
+      hierarchy: {
+        parentId: 'parentId',
+        hasMany: true,
+      },
     }
   );
 
