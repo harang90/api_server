@@ -42,12 +42,6 @@ module.exports = (sequelize) => {
         },
       },
     },
-    {
-      hierarchy: {
-        parentId: 'parentId',
-        hasMany: true,
-      },
-    }
   );
 
   return Comment;

@@ -28,7 +28,6 @@ class ItemDownloader {
         const page = await this.browser.newPage();
         await page.goto(link, { waitUntil: 'networkidle0' });
 
-
         const comments = await this._downloadComments(page);
         const links = await this._extractFileLinksFromLink(page);
         const paths = await this._downloadFiles(links);
@@ -48,73 +47,31 @@ class ItemDownloader {
         const $ = cheerio.load(content);
         const comments = [];
 
-        $('.cmt.r0').each((index, element) => {
-            const $element = $(element);
-            const id = $element.attr('w_idx');
-            const text = $element.find('.content').text().trim();
-            const author = $element.find('.nick').text().trim();
-            const likes = parseInt($element.find('.up u').text().trim()) || 0;
-            const parentId = $element.hasClass('r1') ? $element.prevAll('.cmt.r0:first').attr('w_idx') : null;
+        const parseComment = (selector, parentClass) => {
+            $(selector).each((index, element) => {
+                const $element = $(element);
+                const id = $element.attr('w_idx');
+                const text = $element.find('.content').text().trim();
+                const author = $element.find('.nick').text().trim();
+                const likes = parseInt($element.find('.up u').text().trim()) || 0;
+                const parentId = $element.hasClass(parentClass) ? $element.prevAll(`${selector}:first`).attr('w_idx') : null;
 
-            comments.push({
-                id,
-                text,
-                author,
-                likes,
-                parentId
+                comments.push({
+                    id,
+                    text,
+                    author,
+                    likes,
+                    parentId
+                });
             });
-        });
+        };
 
-        $('.cmt.r1').each((index, element) => {
-            const $element = $(element);
-            const id = $element.attr('w_idx');
-            const text = $element.find('.content').text().trim();
-            const author = $element.find('.nick').text().trim();
-            const likes = parseInt($element.find('.up u').text().trim()) || 0;
-            const parentId = $element.hasClass('r2') ? $element.prevAll('.cmt.r1:first').attr('w_idx') : null;
-
-            comments.push({
-                id,
-                text,
-                author,
-                likes,
-                parentId
-            });
-        });
-
-        $('.cmt.r2').each((index, element) => {
-            const $element = $(element);
-            const id = $element.attr('w_idx');
-            const text = $element.find('.content').text().trim();
-            const author = $element.find('.nick').text().trim();
-            const likes = parseInt($element.find('.up u').text().trim()) || 0;
-            const parentId = $element.hasClass('r3') ? $element.prevAll('.cmt.r2:first').attr('w_idx') : null;
-
-            comments.push({
-                id,
-                text,
-                author,
-                likes,
-                parentId
-            });
-        });
-
-        $('.cmt.r3').each((index, element) => {
-            const $element = $(element);
-            const id = $element.attr('w_idx');
-            const text = $element.find('.content').text().trim();
-            const author = $element.find('.nick').text().trim();
-            const likes = parseInt($element.find('.up u').text().trim()) || 0;
-            const parentId = $element.hasClass('r4') ? $element.prevAll('.cmt.r3:first').attr('w_idx') : null;
-
-            comments.push({
-                id,
-                text,
-                author,
-                likes,
-                parentId
-            });
-        });
+        const rClasses = Array.from($('[class^="r"]')).map(element => $(element).attr('class').split(' ')[1]);
+        const maxRClass = Math.max(...rClasses);
+        console.log("maxRClass: ", maxRClass);
+        for (let i = 0; i <= maxRClass; i++) {
+            parseComment(`.cmt.r${i}`, `r${i + 1}`);
+        }
 
         return comments;
     }
