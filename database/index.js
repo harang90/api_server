@@ -20,4 +20,3 @@ module.exports = {
   Item: require('./item.model')(sequelize),
   Comment: require('./comment.model')(sequelize),
 };
-

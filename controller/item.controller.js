@@ -25,10 +25,12 @@ async function downloadItems(req, res) {
 
     } else {
       const itemDownloader = new ItemDownloader();
-      const paths = await itemDownloader.downloadItem(item.link);
+      const { paths, comments } = await itemDownloader.downloadItem(item.link);
 
       item.resource = paths;
       await item.save();
+
+      console.log("comments: ", comments);
     }
   });
 

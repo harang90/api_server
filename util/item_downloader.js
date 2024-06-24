@@ -1,4 +1,3 @@
-
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 
@@ -39,11 +38,22 @@ class ItemDownloader {
     }
 
     async _downloadComments(page) {
-        const content = await page.content();
+        await page.waitForSelector('div.comment');
+        await page.evaluate(() => {
+            if (!!document.querySelector('div.moretext')) {
+                document.querySelector('div.moretext').click();
+            }
+        });
+        await page.waitForSelector('div.comment');
+        const content = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll('div.comment')).map(el => el.outerHTML).join('');
+        });
         return this._parseComments(content);
     }
 
     async _parseComments(content) {
+        console.log("content: ", content);
+
         const $ = cheerio.load(content);
         const comments = [];
 
@@ -66,10 +76,7 @@ class ItemDownloader {
             });
         };
 
-        const rClasses = Array.from($('[class^="r"]')).map(element => $(element).attr('class').split(' ')[1]);
-        const maxRClass = Math.max(...rClasses);
-        console.log("maxRClass: ", maxRClass);
-        for (let i = 0; i <= maxRClass; i++) {
+        for (let i = 0; i < 10; i++) {
             parseComment(`.cmt.r${i}`, `r${i + 1}`);
         }
 
