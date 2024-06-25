@@ -1,10 +1,10 @@
-
 const fs = require('fs').promises;
 
 const ItemDownloader = require('../util/item_downloader');
 const sheetController = require('./sheet.controller');
 
 const { Item } = require('../database');
+const { Comment } = require('../database');
 
 async function getItems(req, res) {
   const result = await Item.findAll();
@@ -20,7 +20,7 @@ async function syncItems(req, res) {
 async function downloadItems(req, res) {
   const result = await Item.findAll();
 
-  result.forEach(async (item) => {
+  for (const item of result) {
     if (!(item.resource === null)) {
 
     } else {
@@ -30,9 +30,12 @@ async function downloadItems(req, res) {
       item.resource = paths;
       await item.save();
 
-      console.log("comments: ", comments);
+      for (const comment of comments) {
+        comment.itemId = item.id;
+        await Comment.create(comment);
+      }
     }
-  });
+  }
 
   res.status(200).json({ result });
 }

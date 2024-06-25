@@ -57,7 +57,6 @@ class ItemDownloader {
     }
 
     async _parseComments(content) {
-        console.log("content: ", content);
 
         const $ = cheerio.load(content);
         const comments = [];
@@ -83,7 +82,10 @@ class ItemDownloader {
 
         $('div.set').each((index, setElement) => {
             const $set = $(setElement);
-            var id = parseComment('div.cmt.r0');
+            var id = null;
+            $set.find('div.cmt.r0').each((index, childElement) => {
+                id = parseComment(childElement, id);
+            });
             $set.find('div.cmt.r1').each((index, childElement) => {
                 id = parseComment(childElement, id);
             });
