@@ -9,7 +9,7 @@ class ItemDownloader {
     async initBrowser(link) {
         if (!this.browser) {
             this.browser = await puppeteer.launch({
-                headless: true
+                headless: false
             });
         }
     }
@@ -38,15 +38,20 @@ class ItemDownloader {
     }
 
     async _downloadComments(page) {
-        await page.waitForSelector('div.comment');
+        await page.waitForSelector('div#comment.icomment');
         await page.evaluate(() => {
             if (!!document.querySelector('div.moretext')) {
                 document.querySelector('div.moretext').click();
             }
         });
-        await page.waitForSelector('div.comment');
+        await page.evaluate(() => {
+            if (!!document.querySelector('div.cmt_memo p')) {
+                document.querySelector('div.cmt_memo p').click();
+            }
+        });
+        await page.waitForSelector('div.cmt.r1');
         const content = await page.evaluate(() => {
-            return Array.from(document.querySelectorAll('div.comment')).map(el => el.outerHTML).join('');
+            return Array.from(document.querySelectorAll('div#comment.icomment')).map(el => el.outerHTML).join('');
         });
         return this._parseComments(content);
     }
@@ -61,10 +66,10 @@ class ItemDownloader {
             $(selector).each((index, element) => {
                 const $element = $(element);
                 const id = $element.attr('w_idx');
-                const text = $element.find('.content').text().trim();
+                const text = $element.find('.content').html();
                 const author = $element.find('.nick').text().trim();
                 const likes = parseInt($element.find('.up u').text().trim()) || 0;
-                const parentId = $element.hasClass(parentClass) ? $element.prevAll(`${selector}:first`).attr('w_idx') : null;
+                const parentId = $element.hasClass(parentClass) ? $element.prevAll(`${parentClass}:first`).attr('w_idx') : null;
 
                 comments.push({
                     id,
@@ -77,7 +82,7 @@ class ItemDownloader {
         };
 
         for (let i = 0; i < 10; i++) {
-            parseComment(`.cmt.r${i}`, `r${i + 1}`);
+            parseComment(`.cmt.r${i}`, `r${i - 1}`);
         }
 
         return comments;
