@@ -62,28 +62,44 @@ class ItemDownloader {
         const $ = cheerio.load(content);
         const comments = [];
 
-        const parseComment = (selector, parentClass) => {
-            $(selector).each((index, element) => {
-                const $element = $(element);
-                const id = $element.attr('w_idx');
-                const text = $element.find('.content').html();
-                const author = $element.find('.nick').text().trim();
-                const likes = parseInt($element.find('.up u').text().trim()) || 0;
-                const parentId = $element.hasClass(parentClass) ? $element.prevAll(`${parentClass}:first`).attr('w_idx') : null;
+        const parseComment = (element, parentId = null) => {
+            const $element = $(element);
+            const id = $element.attr('w_idx');
+            const text = $element.find('.content').html();
+            const author = $element.find('.nick').text().trim();
+            const likes = parseInt($element.find('.up u').text().trim()) || 0;
 
-                comments.push({
-                    id,
-                    text,
-                    author,
-                    likes,
-                    parentId
-                });
-            });
+            const commentData = {
+                id,
+                text,
+                author,
+                likes,
+                parentId
+            };
+            comments.push(commentData);
+
+            return id;
         };
 
-        for (let i = 0; i < 10; i++) {
-            parseComment(`.cmt.r${i}`, `r${i - 1}`);
-        }
+        $('div.set').each((index, setElement) => {
+            const $set = $(setElement);
+            var id = parseComment('div.cmt.r0');
+            $set.find('div.cmt.r1').each((index, childElement) => {
+                id = parseComment(childElement, id);
+            });
+            $set.find('div.cmt.r2').each((index, childElement) => {
+                id = parseComment(childElement, id);
+            });
+            $set.find('div.cmt.r3').each((index, childElement) => {
+                id = parseComment(childElement, id);
+            });
+            $set.find('div.cmt.r4').each((index, childElement) => {
+                id = parseComment(childElement, id);
+            });
+            $set.find('div.cmt.r5').each((index, childElement) => {
+                id = parseComment(childElement, id);
+            });
+        });
 
         return comments;
     }
