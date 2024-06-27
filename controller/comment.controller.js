@@ -1,5 +1,8 @@
+
 const { Comment } = require('../database');
 const geoip = require('geoip-lite');
+
+const { translateComment } = require('../service/comment.service');
 
 async function getCommentByItemId(req, res) {
     const itemId = req.params.itemId;
@@ -7,6 +10,13 @@ async function getCommentByItemId(req, res) {
 
     console.log("found comments: ", comments);
     res.json(comments);
+}
+
+async function translateCommentById(req, res) {
+    const commentId = req.params.commentId;
+    const comment = await Comment.findByPk(commentId);
+    const translatedComment = await translateComment(comment);
+    res.json(translatedComment);
 }
 
 async function likeComment(req, res) {
